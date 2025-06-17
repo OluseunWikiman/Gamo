@@ -1,0 +1,75 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+
+# Simulated imbalanced IoT dataset
+np.random.seed(42)
+class_counts = [300, 150, 60, 30, 10]
+input_dim = 20
+num_classes = len(class_counts)
+
+# Generate data for each class
+X = np.vstack([
+    np.random.normal(loc=i, scale=1.0, size=(n, input_dim))
+    for i, n in enumerate(class_counts)
+])
+y = np.array([
+    i for i, n in enumerate(class_counts) for _ in range(n)
+])
+
+# Apply t-SNE to reduce dimensions to 2D
+tsne = TSNE(n_components=2, perplexity=30, learning_rate=200, random_state=0)
+X_embedded = tsne.fit_transform(X)
+
+# Plot the 2D t-SNE projection
+plt.figure(figsize=(8, 6))
+scatter = plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=y, cmap='tab10', alpha=0.7)
+plt.legend(*scatter.legend_elements(), title="Classes")
+plt.title("t-SNE Projection of Simulated IoT Data")
+plt.xlabel("t-SNE Component 1")
+plt.ylabel("t-SNE Component 2")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Example: ground truth and predictions (use your actual model outputs here)
+# y_true and y_pred should be 1D arrays of class labels (e.g., from 0 to 4)
+np.random.seed(42)
+y_true = np.random.choice([0, 1, 2, 3, 4], size=500, p=[0.5, 0.3, 0.1, 0.07, 0.03])
+y_pred = y_true.copy()
+# Simulate misclassifications
+flip_idx = np.random.choice(len(y_pred), size=75, replace=False)
+y_pred[flip_idx] = np.random.randint(0, 5, size=len(flip_idx))
+
+# Compute and plot confusion matrix
+cm = confusion_matrix(y_true, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[0, 1, 2, 3, 4])
+fig, ax = plt.subplots(figsize=(6, 5))
+disp.plot(ax=ax, cmap="Blues", values_format='d')
+plt.title("Confusion Matrix: Classifier on IoT Dataset")
+plt.grid(False)
+plt.tight_layout()
+plt.show()
+
+
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# y_pred from above or use your actual model predictions
+df = pd.DataFrame({'Predicted Class': y_pred})
+
+plt.figure(figsize=(8, 5))
+sns.countplot(x='Predicted Class', data=df, palette='Set2')
+plt.title("Prediction Distribution Across Classes")
+plt.xlabel("Predicted Class")
+plt.ylabel("Count")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
